@@ -35,7 +35,7 @@ class qa_html_theme_layer extends qa_html_theme_base
 		if ( isset($post['when_2']) && in_array($post['raw']['postid'], $this->rev_postids) )
 		{
 			$url = qa_path_html('revisions/' . $post['raw']['postid']);
-			$post['when_2']['data'] = '<a rel="nofollow" href="'.$url.'" class="'.$class.'-revised">' . $post['when_2']['data'] . '</a>';
+			$post['what_2'] = '<a rel="nofollow" href="'.$url.'" class="'.$class.'-revised">' . $post['what_2'] . '</a>';
 		}
 
 		parent::post_meta($post, $class, $prefix, $separator);
