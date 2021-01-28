@@ -4,18 +4,16 @@
 	License: http://www.gnu.org/licenses/gpl.html
 */
 
-class qa_html_theme_layer extends qa_html_theme_base
-{
+class qa_html_theme_layer extends qa_html_theme_base {
+
 	private $rev_postids = array();
 
-	public function doctype()
-	{
+	public function doctype() {
 		$q_tmpl = $this->template == 'question';
 		$qa_exists = isset($this->content['q_view']) && isset($this->content['a_list']);
 		$user_permitted = qa_user_permit_error('edit_history_view_perms') === false;
 
-		if ($q_tmpl && $qa_exists && $user_permitted)
-		{
+		if ($q_tmpl && $qa_exists && $user_permitted) {
 			// grab a list of all Q/A posts on this page
 			$postids = array($this->content['q_view']['raw']['postid']);
 			foreach ( $this->content['a_list']['as'] as $answ )
@@ -29,16 +27,25 @@ class qa_html_theme_layer extends qa_html_theme_base
 		parent::doctype();
 	}
 
-	public function post_meta($post, $class, $prefix=null, $separator='<BR/>')
-	{
-		// only link when there are actual revisions
-		if ( isset($post['when_2']) && in_array($post['raw']['postid'], $this->rev_postids) )
-		{
-			$url = qa_path_html('revisions/' . $post['raw']['postid']);
-			$post['what_2'] = '<a rel="nofollow" href="'.$url.'" class="'.$class.'-revised">' . $post['what_2'] . '</a>';
-		}
+	public function a_item_buttons($a_item) {
+		$this->_edit_history_link($a_item, 'qa-a-item');
+		parent::a_item_buttons($a_item);
+	}
 
-		parent::post_meta($post, $class, $prefix, $separator);
+	public function q_view_buttons($q_view) {
+		$this->_edit_history_link($q_view, 'qa-q-view');
+		parent::q_view_buttons($q_view);
+	}
+
+	private function _edit_history_link($post, $class) {
+		$url = qa_path_html('revisions/' . $post['raw']['postid']);
+		$this->output('<div class="' . $class .'-revised">');
+		if (in_array($post['raw']['postid'], $this->rev_postids)) {
+			$this->output('<a rel="nofollow" href="'. $url . '">edit history</a>');
+		} else {
+			$this->output('<span class="edh-disabled">edit history</span>');
+		}
+		$this->output('</div>');
 	}
 
 }
