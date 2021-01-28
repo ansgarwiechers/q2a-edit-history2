@@ -261,9 +261,8 @@ class qa_edh_revisions
 		$show_buttons = $this->admin_permit();
 
 		$num_revs = count($revisions);
-		foreach ($revisions as $i=>$rev)
-		{
-			$updated = implode( '', qa_when_to_html($rev['edited'], $this->options['fulldatedays']) );
+		foreach ($revisions as $i=>$rev) {
+			$updated = implode('', $this->_format_timestamp($rev['edited']));
 			$userlink = $this->user_handle_link($rev['editedby']);
 			$langkey = $i < $num_revs-1 ? 'edithistory/edited_when_by' : 'edithistory/original_post_by';
 
@@ -274,11 +273,9 @@ class qa_edh_revisions
 
 			$html .= '<div class="diff-block">' . "\n";
 			$html .= '  <div class="diff-date">';
-			if ($i == 0)
+			if ($i == 0) {
 				$html .= '<span class="diff-button">' . qa_lang_html('edithistory/current_revision') . '</span>';
-			else if ($show_buttons) {
-				// $html .= '<button type="submit" name="delete" value="' . $rev['id'] . '" class="diff-button qa-form-tall-button qa-form-tall-button-cancel">' .
-				// 	qa_lang('edithistory/delete') . '</button>';
+			} else if ($show_buttons) {
 				$html .= '<button type="submit" name="revert" value="' . $rev['id'] . '" class="diff-button qa-form-tall-button qa-form-tall-button-reset">' .
 					qa_lang('edithistory/revert') . '</button>';
 			}
@@ -359,6 +356,22 @@ class qa_edh_revisions
 		return empty($handle)
 			? qa_lang_html('main/anonymous')
 			: '<a href="' . qa_path_html('user/'.$handle) . '">' . qa_html($handle) . '</a>';
+	}
+
+	private function _format_timestamp($timestamp) {
+		$interval     = qa_opt('db_time') - $timestamp;
+		$fulldatedays = qa_opt('show_full_date_days');
+
+		if ($interval < 0 || (isset($fulldatedays) && $interval > 86400 * $fulldatedays)) {
+			$post_when = array(
+				'data' => gmdate('Y-m-d H:i:s e', $timestamp),
+			);
+		} else {
+			// ago-style date
+			$post_when = qa_lang_html_sub_split('main/x_ago', qa_html(qa_time_to_string($interval)));
+		}
+
+		return $post_when;
 	}
 
 }
