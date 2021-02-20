@@ -167,8 +167,8 @@ class qa_edh_revisions
 
 		// set diff of oldest revision to its own content
 		$revisions[0]['id'] = 0;
-		$revisions[0]['diff_title'] = trim($revisions[0]['title']);
-		$revisions[0]['diff_content'] = $revisions[0]['content'];
+		$revisions[0]['diff_title'] = qa_html(trim($revisions[0]['title']));
+		$revisions[0]['diff_content'] = qa_html($revisions[0]['content']);
 		$revisions[0]['handle'] = $usernames[$revisions[0]['userid']];
 		$len = count($revisions);
 
